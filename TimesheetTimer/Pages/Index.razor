@@ -1,0 +1,34 @@
+﻿@page "/"
+
+<PageTitle>Timesheet Timer</PageTitle>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <a class="float-end" onclick="@(() => { AddTimer(); })">Add Timer</a>
+        @{
+            foreach (int timerId in timersList)
+            {
+                <Timer timerId="@timerId" />
+            }
+        }
+    </div>
+</div>
+
+@code {
+    private List<int> timersList = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        AddTimer();
+    }
+
+    private void AddTimer()
+    {
+        int timersCount = timersList.Count + 1;
+
+        timersList.Add(timersCount);
+    }
+}

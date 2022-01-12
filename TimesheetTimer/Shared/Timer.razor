@@ -1,0 +1,79 @@
+﻿@using System.Diagnostics;
+
+<div id="@timerId" class="timer-container col-12 col-md-4 mb-4">
+    <div class="timer-item">
+
+        @{ if (timerCompleted)
+            {
+                <p>@timerName</p>
+                <div class="timer-time">Completed time: @completedTime</div>
+            }
+            else
+            {
+                <input placeholder="Enter Timer Name..." @bind="@timerName" />
+                <div class="timer-time">@timeSpan.Hours:@timeSpan.Minutes:@timeSpan.Seconds</div>
+                <div class="timer-options">
+                    @if (!isTimerRunning)
+                    {
+                        <button onclick="@(async () => { StartWatch(); })">Resume</button>
+                    }
+                    else
+                    {
+                        <button onclick="@(() => { isTimerRunning = false; })">Pause</button>
+                    }
+                    <button onclick="@(async () => { StopWatch(); })">Stop</button>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int timerId { get; set; }
+
+    private Stopwatch timer;
+
+    private TimeSpan timeSpan;
+
+    private bool isTimerRunning;
+
+    private bool timerCompleted = false;
+
+    private string completedTime;
+
+    private string timerName;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        timer = new Stopwatch();
+    }
+
+    private async Task StartWatch()
+    {
+        timer.Start();
+
+        isTimerRunning = true;
+        while (isTimerRunning)
+        {
+            await Task.Delay(1000);
+            if (isTimerRunning)
+            {
+                TimeSpan oneSecond = new TimeSpan(0, 0, 1);
+                timeSpan = timeSpan.Add(oneSecond);
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task StopWatch()
+    {
+        timer.Stop();
+        timerCompleted = true;
+
+        completedTime = $"{timeSpan.Hours}:{timeSpan.Minutes}:{timeSpan.Seconds}";
+    }
+    }
+
